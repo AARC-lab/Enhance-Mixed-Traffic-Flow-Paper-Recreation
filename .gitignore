@@ -1,0 +1,47 @@
+# Ignore all CSV files
+*.csv
+
+# Ignore all dataset-related files
+*.json
+*.xml
+*.xlsx
+*.xls
+*.hdf5
+*.parquet
+*.pkl
+*.db
+*.sqlite
+*.feather
+
+# Ignore compiled Python files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore logs and temp files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Ignore virtual environments
+venv/
+env/
+*.egg-info/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/project-specific files
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
