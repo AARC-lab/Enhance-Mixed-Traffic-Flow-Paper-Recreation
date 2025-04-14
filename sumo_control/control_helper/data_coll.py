@@ -51,7 +51,7 @@ def data_coll_t_check(base_setting_para, interrupt_timesatmp, time_stamp):
     base_info_right_df = pd.DataFrame(base_info_right, columns=['right_lane', 'vehicle_id_right', 'vehicle_type_right', 'speed_right', 'acc_right', 'pos_right', 'time_stamp_right'])
     base_info_acc_df = pd.DataFrame(base_info_acc, columns=['acc_lane', 'vehicle_id_acc', 'vehicle_type_acc', 'speed_acc', 'acc_acc', 'pos_acc', 'time_stamp_acc'])
     base_info_total = pd.concat([base_info_left_df, base_info_middle_df, base_info_right_df, base_info_acc_df], axis=1)
-    base_info_total.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Draft Project/output/data/base_info_data/hybrid_3600_{file_name_base}.csv", index=False)
+    base_info_total.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/output/data/base_info_data/new_hybrid__3600_{file_name_base}.csv", index=False)
 
     delay_data = pd.DataFrame(delay_aggregated_data.values())
-    delay_data.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Draft Project/output/data/delay_data/hybrid_delay_{file_name_base}.csv", index=False)
+    delay_data.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/output/data/delay_data/new_hybrid_delay_{file_name_base}.csv", index=False)

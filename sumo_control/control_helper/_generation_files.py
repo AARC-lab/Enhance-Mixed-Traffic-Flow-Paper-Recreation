@@ -1,5 +1,5 @@
 def generate_roadnet_file_func(speed_setting):
-    with open("/home/ruby/Nazmus Shakib/AARC Lab/Draft Project/deployment/environment/road.net.xml", "w") as road_net_file:
+    with open("/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/deployment/environment/road.net.xml", "w") as road_net_file:
         print(f"""<?xml version="1.0" encoding="UTF-8"?>
 
 <net version="1.16" junctionCornerDetail="5" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
@@ -79,7 +79,7 @@ def generate_roadnet_file_func(speed_setting):
 """, file=road_net_file)
         
 def generate_roadnet_without_ramp_file_func(speed_setting):
-    with open("/home/ruby/Nazmus Shakib/AARC Lab/Draft Project/deployment/environment/road_without_ramp.net.xml", "w") as road_net_file:
+    with open("/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/deployment/environment/road_without_ramp.net.xml", "w") as road_net_file:
         print(f"""<?xml version="1.0" encoding="UTF-8"?>
 
 <net version="1.20" junctionCornerDetail="5" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
@@ -159,7 +159,7 @@ def generate_routefile(multi_index_0, multi_index_1, MPR):
     # HDV: green
     # CAV: red
 
-    with open("/home/ruby/Nazmus Shakib/AARC Lab/Draft Project/deployment/environment/route.rou.xml", "w") as routes:
+    with open("/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/deployment/environment/route.rou.xml", "w") as routes:
         print("""<routes>
         <vType id="HDV_ori" length="5.00" accel="1.5" decel="3.5" emergencyDecel="3.5" mingap="3.5" tau="2.0" color="127,255,0" carFollowModel="IDM"/>
         <vType id="CAV_ori" length="5.00" accel="2.6" decel="4.5" emergencyDecel="4.5" mingap="2.0" tau="1.1" color="255,0,0" carFollowModel="CACC"/>
@@ -194,7 +194,7 @@ def generate_routefile_without_ramp(multi_index_0, multi_index_1, MPR):
     # HDV: green
     # CAV: red
 
-    with open("/home/ruby/Nazmus Shakib/AARC Lab/Draft Project/deployment/environment/route_without_ramp.rou.xml", "w") as routes:
+    with open("/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/deployment/environment/route_without_ramp.rou.xml", "w") as routes:
         print("""<routes>
         <vType id="HDV_ori" length="5.00" accel="1.5" decel="3.5" emergencyDecel="3.5" mingap="3.5" tau="2.0" color="127,255,0" carFollowModel="IDM"/>
         <vType id="CAV_ori" length="5.00" accel="2.6" decel="4.5" emergencyDecel="4.5" mingap="2.0" tau="1.1" color="255,0,0" carFollowModel="CACC"/>

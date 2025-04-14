@@ -107,33 +107,54 @@ def control_func(vehicle_id):
 
             if gap < CACC_FOLLOWING_DISTANCE:
                 current_mode = "following_mode"
+                traci.vehicle.setTau(vehicle_id, 0.6)
+                traci.vehicle.setSpeedFactor(vehicle_id, 1.1)
+
             elif gap < CACC_CATCH_UP_DISTANCE:
-                current_mode = "catch-up_following_mode" if platoon_size < PLATOON_SIZE_THRESHOLD else "catching_mode"
+                if platoon_size < PLATOON_SIZE_THRESHOLD:
+                    traci.vehicle.setTau(vehicle_id, 0.6)
+                    traci.vehicle.setSpeedFactor(vehicle_id, 1.3)  # catch-up_following_mode
+                else:
+                    traci.vehicle.setTau(vehicle_id, 0.7)
+                    traci.vehicle.setSpeedFactor(vehicle_id, 1.2)  # catching_mode
+
             else:
                 current_mode = "lead-catching_mode"
+                traci.vehicle.setTau(vehicle_id, 0.7)
+                traci.vehicle.setSpeedFactor(vehicle_id, 1.2) # for lead-catching sf = 1.2
 
             success = join_platoon(leader_id, vehicle_id) if platoon_size < PLATOON_SIZE_THRESHOLD else False
             if not success:
                 current_mode = "leading_mode"
                 platoon_data[vehicle_id] = [vehicle_id]
+                traci.vehicle.setTau(vehicle_id, 1.1)
+                traci.vehicle.setSpeedFactor(vehicle_id, 1)
 
             acceleration = CACC_control(vehicle_id, leader_id, gap, current_speed, current_mode)
+            
 
         else:
             # No front CAV detected within 120m
             current_mode = "leading_mode"
             platoon_data[vehicle_id] = [vehicle_id]
             acceleration = 1  # Maintain speed in leading mode
+            traci.vehicle.setTau(vehicle_id, 1.1)
+            traci.vehicle.setSpeedFactor(vehicle_id, 1)
 
     else:
         # No leader detected
         current_mode = "leading_mode"
         acceleration = 1  # Maintain speed
+        traci.vehicle.setTau(vehicle_id, 1.1)
+        traci.vehicle.setSpeedFactor(vehicle_id, 1)
 
     # Store vehicle mode
     vehicle_modes[vehicle_id] = current_mode
 
-    # Apply acceleration instead of speed change
+    # Apply acceleration
     traci.vehicle.setAcceleration(vehicle_id, acceleration, 1)
 
     # print(f"Vehicle {vehicle_id} | Mode: {current_mode} | Platoon Size: {get_platoon_size(vehicle_id)} | Gap: {gap} | Accel: {acceleration:.2f} m/s²")
+
+def control_func_baseline(vehicle_id):
+    traci.vehicle.setSpeedFactor(vehicle_id, 1)
