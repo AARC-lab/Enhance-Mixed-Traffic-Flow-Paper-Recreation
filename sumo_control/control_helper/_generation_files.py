@@ -168,16 +168,20 @@ def generate_routefile(multi_index_0, multi_index_1, MPR):
         <route id="r_2" edges="2 3 4"/>""", file=routes)
         
         # Generate vehicles for the main road
-        print('<flow id="flow_HDV_0" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_HDV_0), file=routes)
-        print('</flow>', file=routes)
-        print('<flow id="flow_CAV_0" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_CAV_0), file=routes)
-        print('</flow>', file=routes)
+        if num_HDV_0 > 0:
+            print('<flow id="flow_HDV_0" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_HDV_0), file=routes)
+            print('</flow>', file=routes)
+        if num_CAV_0 > 0:
+            print('<flow id="flow_CAV_0" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_CAV_0), file=routes)
+            print('</flow>', file=routes)
     
         # Generate vehicles for the ramp
-        print('<flow id="flow_HDV_1" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_HDV_1), file=routes)
-        print('</flow>', file=routes)
-        print('<flow id="flow_CAV_1" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_CAV_1), file=routes)
-        print('</flow>', file=routes)
+        if num_HDV_1 > 0:
+            print('<flow id="flow_HDV_1" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_HDV_1), file=routes)
+            print('</flow>', file=routes)
+        if num_CAV_1 > 0:
+            print('<flow id="flow_CAV_1" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_CAV_1), file=routes)
+            print('</flow>', file=routes)
 
         print("</routes>", file=routes)
 

@@ -18,6 +18,7 @@ IDM_MIN_GAP = 2.0  # m
 CACC_FOLLOWING_DISTANCE = 20  # m
 CACC_CATCH_UP_DISTANCE = 120  # m
 CACC_KP = 0.5  # Proportional gain for speed error
+CACC_KG = 0.1 # gap control coefficient
 CACC_KD = 0.3  # Derivative gain for acceleration difference
 PLATOON_SIZE_THRESHOLD = 9  # Max platoon size
 
@@ -54,25 +55,37 @@ def IDM_control(vehicle_id, leader_id, gap, current_speed):
         s_star = IDM_MIN_GAP + max(0, current_speed * IDM_TIME_HEADWAY + (current_speed * delta_speed) / (2 * (IDM_MAX_ACCEL * IDM_DECEL) ** 0.5))
 
         # Compute acceleration using IDM formula
-        acceleration = IDM_MAX_ACCEL * (1 - (current_speed / IDM_DESIRED_SPEED) ** 4 - (s_star / gap) ** 2)
+        if gap < 0.5:
+            print(f"[IDM Warning] {vehicle_id} has very small gap ({gap:.3f} m) to {leader_id}")
+            return -IDM_DECEL
+        else:
+            acceleration = IDM_MAX_ACCEL * (1 - (current_speed / IDM_DESIRED_SPEED) ** 4 - (s_star / gap) ** 2)
 
         # Apply acceleration limits
         acceleration = max(-IDM_DECEL, min(acceleration, IDM_MAX_ACCEL))
-
+        print("Applied IDM on ", vehicle_id)
         return acceleration
     else:
         return IDM_MAX_ACCEL  # Free-flow acceleration
 
-def CACC_control(vehicle_id, leader_id, gap, current_speed, mode):
+def CACC_control(vehicle_id, leader_id, gap, current_speed, mode, min_gap=2.0):
     if leader_id and gap is not None:
         leader_speed = traci.vehicle.getSpeed(leader_id)
         leader_accel = traci.vehicle.getAcceleration(leader_id)
 
         speed_error = leader_speed - current_speed
-        acceleration_command = CACC_KP * speed_error + CACC_KD * leader_accel
+
+        desired_gap = current_speed * CACC_PARAMS[mode]["time_headway"] + min_gap
+        gap_error = gap - desired_gap
+        acceleration_command = CACC_KP * speed_error + CACC_KG * gap_error + CACC_KD * leader_accel
 
         if mode in CACC_PARAMS:
             acceleration_command *= CACC_PARAMS[mode]["speed_factor"]  #Applying Speed Factor
+            print("Applied CACC on ", vehicle_id)
+
+        acceleration_command = max(-3.0, min(acceleration_command, 2.0))  # Clip to safe range
+
+        print(f"Vehicle {vehicle_id} | Gap Error: {gap_error:.2f}, Speed Error: {speed_error:.2f}, Acc Cmd: {acceleration_command:.2f}")
 
         return acceleration_command
     return 0
@@ -92,7 +105,7 @@ def control_func(vehicle_id):
     if not is_cav:
         acceleration = IDM_control(vehicle_id, leader_id, gap, current_speed)
 
-        # Apply acceleration change properly
+        # Apply acceleration change
         traci.vehicle.setAcceleration(vehicle_id, acceleration, 1)
         return
 
@@ -107,28 +120,30 @@ def control_func(vehicle_id):
 
             if gap < CACC_FOLLOWING_DISTANCE:
                 current_mode = "following_mode"
-                traci.vehicle.setTau(vehicle_id, 0.6)
-                traci.vehicle.setSpeedFactor(vehicle_id, 1.1)
+                # traci.vehicle.setTau(vehicle_id, 0.6)
+                # traci.vehicle.setSpeedFactor(vehicle_id, 1.1)
 
             elif gap < CACC_CATCH_UP_DISTANCE:
                 if platoon_size < PLATOON_SIZE_THRESHOLD:
-                    traci.vehicle.setTau(vehicle_id, 0.6)
-                    traci.vehicle.setSpeedFactor(vehicle_id, 1.3)  # catch-up_following_mode
+                    current_mode = "catch-up_following_mode"
+                    # traci.vehicle.setTau(vehicle_id, 0.6)
+                    # traci.vehicle.setSpeedFactor(vehicle_id, 1.3)  # catch-up_following_mode
                 else:
-                    traci.vehicle.setTau(vehicle_id, 0.7)
-                    traci.vehicle.setSpeedFactor(vehicle_id, 1.2)  # catching_mode
+                    current_mode = "catching_mode"
+                    # traci.vehicle.setTau(vehicle_id, 0.7)
+                    # traci.vehicle.setSpeedFactor(vehicle_id, 1.2)  # catching_mode
 
             else:
                 current_mode = "lead-catching_mode"
-                traci.vehicle.setTau(vehicle_id, 0.7)
-                traci.vehicle.setSpeedFactor(vehicle_id, 1.2) # for lead-catching sf = 1.2
+                # traci.vehicle.setTau(vehicle_id, 0.7)
+                # traci.vehicle.setSpeedFactor(vehicle_id, 1.2) # for lead-catching sf = 1.2
 
             success = join_platoon(leader_id, vehicle_id) if platoon_size < PLATOON_SIZE_THRESHOLD else False
             if not success:
                 current_mode = "leading_mode"
                 platoon_data[vehicle_id] = [vehicle_id]
-                traci.vehicle.setTau(vehicle_id, 1.1)
-                traci.vehicle.setSpeedFactor(vehicle_id, 1)
+                # traci.vehicle.setTau(vehicle_id, 1.1)
+                # traci.vehicle.setSpeedFactor(vehicle_id, 1)
 
             acceleration = CACC_control(vehicle_id, leader_id, gap, current_speed, current_mode)
             
@@ -137,16 +152,18 @@ def control_func(vehicle_id):
             # No front CAV detected within 120m
             current_mode = "leading_mode"
             platoon_data[vehicle_id] = [vehicle_id]
-            acceleration = 1  # Maintain speed in leading mode
-            traci.vehicle.setTau(vehicle_id, 1.1)
-            traci.vehicle.setSpeedFactor(vehicle_id, 1)
+            acceleration = CACC_control(vehicle_id, leader_id, gap, current_speed, current_mode)
+            # acceleration = 1  # Maintain speed in leading mode
+            # traci.vehicle.setTau(vehicle_id, 1.1)
+            # traci.vehicle.setSpeedFactor(vehicle_id, 1)
 
     else:
         # No leader detected
         current_mode = "leading_mode"
-        acceleration = 1  # Maintain speed
-        traci.vehicle.setTau(vehicle_id, 1.1)
-        traci.vehicle.setSpeedFactor(vehicle_id, 1)
+        acceleration = CACC_control(vehicle_id, leader_id, gap, current_speed, current_mode)
+        # acceleration = 1  # Maintain speed
+        # traci.vehicle.setTau(vehicle_id, 1.1)
+        # traci.vehicle.setSpeedFactor(vehicle_id, 1)
 
     # Store vehicle mode
     vehicle_modes[vehicle_id] = current_mode

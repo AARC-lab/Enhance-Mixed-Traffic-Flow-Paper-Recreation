@@ -4,7 +4,7 @@ from .control import *
 from .data_coll import *
 
 
-interrupt_timestamp = 3600
+interrupt_timestamp = 1800
 
 def run(base_setting_para):  # Function to execute the defined operations
     step = 0
@@ -15,7 +15,7 @@ def run(base_setting_para):  # Function to execute the defined operations
         time_stamp = int(step * 10) / 10
         # Control each vehicle in sequence
         for vehicle_id in vehicle_ids:
-            control_func(vehicle_id)
+            #control_func(vehicle_id)
             if time_stamp % 1 == 0:
                 data_coll_vi_ti(vehicle_id, time_stamp)
         if time_stamp % 1 == 0:
