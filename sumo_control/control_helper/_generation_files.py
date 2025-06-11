@@ -161,23 +161,27 @@ def generate_routefile(multi_index_0, multi_index_1, MPR):
 
     with open("/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/deployment/environment/route.rou.xml", "w") as routes:
         print("""<routes>
-        <vType id="HDV_ori" length="5.00" accel="1.5" decel="3.5" emergencyDecel="3.5" mingap="3.5" tau="2.0" color="127,255,0" carFollowModel="IDM"/>
-        <vType id="CAV_ori" length="5.00" accel="2.6" decel="4.5" emergencyDecel="4.5" mingap="2.0" tau="1.1" color="255,0,0" carFollowModel="CACC"/>
+        <vType id="HDV_ori" vClass="truck" length="5.00" accel="1.5" decel="3.5" emergencyDecel="3.5" mingap="3.5" tau="2.0" color="127,255,0" carFollowModel="IDM"/>
+        <vType id="CAV_ori" vClass="passenger" length="5.00" accel="2.6" decel="4.5" emergencyDecel="4.5" mingap="2.0" tau="1.1" color="255,0,0" carFollowModel="CACC"/>
 
         <route id="r_1" edges="1 3 4"/>
         <route id="r_2" edges="2 3 4"/>""", file=routes)
         
         # Generate vehicles for the main road
-        print('<flow id="flow_HDV_0" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_HDV_0), file=routes)
-        print('</flow>', file=routes)
-        print('<flow id="flow_CAV_0" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_CAV_0), file=routes)
-        print('</flow>', file=routes)
+        if num_HDV_0 > 0:
+            print('<flow id="flow_HDV_0" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_HDV_0), file=routes)
+            print('</flow>', file=routes)
+        if num_CAV_0 > 0:
+            print('<flow id="flow_CAV_0" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_1" departLane="random" lcKeepRight="0">' % (num_CAV_0), file=routes)
+            print('</flow>', file=routes)
     
         # Generate vehicles for the ramp
-        print('<flow id="flow_HDV_1" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_HDV_1), file=routes)
-        print('</flow>', file=routes)
-        print('<flow id="flow_CAV_1" begin="0" end="3600" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_CAV_1), file=routes)
-        print('</flow>', file=routes)
+        if num_HDV_1 > 0:
+            print('<flow id="flow_HDV_1" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="HDV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_HDV_1), file=routes)
+            print('</flow>', file=routes)
+        if num_CAV_1 > 0:
+            print('<flow id="flow_CAV_1" begin="0" end="1800" vehsPerHour="%i" departSpeed="max" type="CAV_ori" route="r_2" departLane="random" lcKeepRight="0">' % (num_CAV_1), file=routes)
+            print('</flow>', file=routes)
 
         print("</routes>", file=routes)
 
