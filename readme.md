@@ -5,7 +5,7 @@ This repository simulates enhanced mixed traffic behavior using SUMO (Simulation
 ---
 
 ## Project Structure
-
+```
 EMT_project/
 ├── deployment/
 │ └── environment/
@@ -26,8 +26,7 @@ EMT_project/
 │ ├── run_for_main.py
 ├── requirements.txt
 ├── readme.md
-
-
+```
 ---
 
 ## Requirements
