@@ -38,6 +38,31 @@ def data_coll_vi_ti(vehicle_id, time_stamp):
 def data_coll_ti(vehicle_ids):
     coll_delay_data(vehicle_ids)
 
+def export_platoon_history(base_setting_para, interrupt_timesatmp):
+    from .control import platoon_history
+
+    if base_setting_para[3]:
+        tag = 'without_ramp'
+    else:
+        tag = 'ramp'
+    file_name_base = f"mpr_{base_setting_para[2]}_flow_{base_setting_para[0]}_{base_setting_para[1]}_time_{interrupt_timesatmp}_{tag}"
+    file_path = f"/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/output/data/platoon_history/platoon_history_{file_name_base}.csv"
+
+    rows = []
+    for leader, info in platoon_history.items():
+        rows.append({
+            "platoon_leader": leader,
+            "size": len(info["members"]),
+            "duration": round(info["end_time"] - info["start_time"], 2),
+            "start_time": round(info["start_time"], 2),
+            "end_time": round(info["end_time"], 2),
+            "members": " ".join(info["members"])
+        })
+
+    df = pd.DataFrame(rows)
+    df.to_csv(file_path, index=False)
+
+
 def data_coll_t_check(base_setting_para, interrupt_timesatmp, time_stamp):
     F_NAME = base_setting_para
     if base_setting_para[3]:
@@ -51,7 +76,9 @@ def data_coll_t_check(base_setting_para, interrupt_timesatmp, time_stamp):
     base_info_right_df = pd.DataFrame(base_info_right, columns=['right_lane', 'vehicle_id_right', 'vehicle_type_right', 'speed_right', 'acc_right', 'pos_right', 'time_stamp_right'])
     base_info_acc_df = pd.DataFrame(base_info_acc, columns=['acc_lane', 'vehicle_id_acc', 'vehicle_type_acc', 'speed_acc', 'acc_acc', 'pos_acc', 'time_stamp_acc'])
     base_info_total = pd.concat([base_info_left_df, base_info_middle_df, base_info_right_df, base_info_acc_df], axis=1)
-    base_info_total.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/output/data/base_info_data/new_baseline__1800_{file_name_base}.csv", index=False)
+    base_info_total.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/output/data/base_info_data/platoon_control_1800_{file_name_base}.csv", index=False)
+
+    export_platoon_history(base_setting_para, interrupt_timesatmp)
 
     delay_data = pd.DataFrame(delay_aggregated_data.values())
-    delay_data.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/output/data/delay_data/new_baseline_delay_{file_name_base}.csv", index=False)
+    delay_data.to_csv(f"/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/output/data/delay_data/platoon_control_delay_{file_name_base}.csv", index=False)

@@ -161,8 +161,8 @@ def generate_routefile(multi_index_0, multi_index_1, MPR):
 
     with open("/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/deployment/environment/route.rou.xml", "w") as routes:
         print("""<routes>
-        <vType id="HDV_ori" length="5.00" accel="1.5" decel="3.5" emergencyDecel="3.5" mingap="3.5" tau="2.0" color="127,255,0" carFollowModel="IDM"/>
-        <vType id="CAV_ori" length="5.00" accel="2.6" decel="4.5" emergencyDecel="4.5" mingap="2.0" tau="1.1" color="255,0,0" carFollowModel="CACC"/>
+        <vType id="HDV_ori" vClass="truck" length="5.00" accel="1.5" decel="3.5" emergencyDecel="3.5" mingap="3.5" tau="2.0" color="127,255,0" carFollowModel="IDM"/>
+        <vType id="CAV_ori" vClass="passenger" length="5.00" accel="2.6" decel="4.5" emergencyDecel="4.5" mingap="2.0" tau="1.1" color="255,0,0" carFollowModel="CACC"/>
 
         <route id="r_1" edges="1 3 4"/>
         <route id="r_2" edges="2 3 4"/>""", file=routes)

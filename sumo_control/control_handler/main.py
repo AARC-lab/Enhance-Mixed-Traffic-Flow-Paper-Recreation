@@ -19,7 +19,7 @@ multi_index_0 = 12 * 3                          # Main road traffic    unit: 100
 multi_index_1 = 8                               # Ramp traffic         unit: 100 vehicles
 initial_speed_0 = 110 / 3.6                     # Initial speed on main road, 110 km/h
 initial_speed_1 = 80 / 3.6                      # Initial speed on ramp, 80 km/h
-MPR = 100                                         # MPR of CAV
+MPR = 50                                        # MPR of CAV
 without_ramp = False
 
 base_setting_para = [multi_index_0, multi_index_1, MPR, without_ramp]
@@ -47,16 +47,6 @@ if __name__ == "__main__":
         generate_routefile(multi_index_0, multi_index_1, MPR)                     # Generate traffic
         generate_roadnet_file_func(speed_setting)
         traci.start([sumoBinary, "-c", "/home/ruby/Nazmus Shakib/AARC Lab/Paper Recreation: Enhance Mix Traffic Flow/deployment/environment/main_config.sumocfg"])
-        # if MPR >= 60:
-        #     print("High MPR detected. Applying CAV-only restriction on left lanes.")
-
-        #     left_lane_ids = ["1_2", "3_3", "4_2", "0_1_2", "1_0_3"]
-        #     for lane_id in left_lane_ids:
-        #         try:
-        #             traci.lane.setAllowed(lane_id, ["CAV_ori"])
-        #             print(f"[Applied] {lane_id} now restricted to CAV_ori only.")
-        #         except Exception as e:
-        #             print(f"[Error] Could not restrict {lane_id}: {e}")
 
     if without_ramp:
         generate_routefile_without_ramp(multi_index_0, multi_index_1, MPR)        # Generate traffic
